@@ -1,0 +1,89 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+[RequireComponent(typeof(Rigidbody2D))]
+public class PlayerController : MonoBehaviour
+{
+    [SerializeField]
+    float moveSpeed = 5.0f;
+
+    [SerializeField]
+    GunController gun;
+
+    bool isFacingRight = true;
+
+    Vector2 inputVector;
+    Vector2 moveDirection;
+    Vector2 velocity;
+    Vector2 shootDirection;
+
+    Rigidbody2D rigid;
+
+    void Awake()
+    {
+        Initialize();
+    }
+
+    void Update()
+    {
+        InputHandler();
+        FlipHandler();
+    }
+
+    void FixedUpdate()
+    {
+        MoveHandler();
+    }
+
+    void Initialize()
+    {
+        rigid = GetComponent<Rigidbody2D>();
+    }
+
+    void InputHandler()
+    {
+        inputVector.x = Input.GetAxisRaw("Horizontal");
+        inputVector.y = Input.GetAxisRaw("Vertical");
+
+        if (Input.GetButtonDown("Fire1"))
+        {
+            shootDirection = isFacingRight ? Vector2.right : Vector2.left;
+            gun.Shoot(shootDirection);
+        }
+    }
+
+    void MoveHandler()
+    {
+        moveDirection = inputVector;
+
+        if (moveDirection.magnitude > 1.0f)
+        {
+            moveDirection = moveDirection.normalized;
+        }
+
+        velocity = moveDirection * moveSpeed;
+        rigid.velocity = velocity * Time.fixedDeltaTime;
+    }
+
+    void FlipHandler()
+    {
+        if (inputVector.x > 0.0f && !isFacingRight)
+        {
+            FlipX();
+        }
+        else if (inputVector.x < 0.0f && isFacingRight)
+        {
+            FlipX();
+        }
+    }
+
+    void FlipX()
+    {
+        isFacingRight = !isFacingRight;
+        Vector3 newScale = transform.localScale;
+        newScale.x *= -1.0f;
+        transform.localScale = newScale;
+    }
+}
+
