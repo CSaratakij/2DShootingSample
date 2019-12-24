@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GunController : MonoBehaviour
 {
-    const int MAX_BULLET_POOL = 10;
+    const int MAX_BULLET_POOL = 20;
 
     [SerializeField]
     float shootRate = 0.5f;

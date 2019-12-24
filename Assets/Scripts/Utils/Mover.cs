@@ -18,6 +18,7 @@ public class Mover : MonoBehaviour
 
     Rigidbody2D rigid;
 
+    bool isDisable = false;
 
     void Awake()
     {
@@ -26,7 +27,8 @@ public class Mover : MonoBehaviour
 
     void OnEnable()
     {
-        disableDelay = Time.time + disableDelay;
+        disableTimer = Time.time + disableDelay;
+        isDisable = false;
     }
 
     void Update()
@@ -53,8 +55,12 @@ public class Mover : MonoBehaviour
 
     void DisableHandler()
     {
-        if (disableDelay < Time.time)
+        if (isDisable)
+            return;
+
+        if (disableTimer < Time.time)
         {
+            isDisable = true;
             gameObject.SetActive(false);
         }
     }
