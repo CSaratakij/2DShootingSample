@@ -6,6 +6,12 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
+    Transform aimSight;
+
+    [SerializeField]
+    Transform barrel;
+
+    [SerializeField]
     float moveSpeed = 5.0f;
 
     [SerializeField]
@@ -28,6 +34,11 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         InputHandler();
+    }
+
+    void LateUpdate()
+    {
+        AimHandler();
         FlipHandler();
     }
 
@@ -39,6 +50,7 @@ public class PlayerController : MonoBehaviour
     void Initialize()
     {
         rigid = GetComponent<Rigidbody2D>();
+        aimSight.parent = null;
     }
 
     void InputHandler()
@@ -48,7 +60,6 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetButtonDown("Fire1"))
         {
-            shootDirection = isFacingRight ? Vector2.right : Vector2.left;
             gun.Shoot(shootDirection);
         }
     }
@@ -64,6 +75,19 @@ public class PlayerController : MonoBehaviour
 
         velocity = moveDirection * moveSpeed;
         rigid.velocity = velocity * Time.fixedDeltaTime;
+    }
+
+    void AimHandler()
+    {
+        aimSight.position = transform.position;
+
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 relativeVector = mousePosition - transform.position;
+
+        float angle = Mathf.Atan2(relativeVector.y, relativeVector.x) * Mathf.Rad2Deg;
+
+        aimSight.rotation = Quaternion.Euler(0, 0, angle);
+        shootDirection = barrel.up;
     }
 
     void FlipHandler()
@@ -82,8 +106,8 @@ public class PlayerController : MonoBehaviour
     {
         isFacingRight = !isFacingRight;
         Vector3 newScale = transform.localScale;
+
         newScale.x *= -1.0f;
         transform.localScale = newScale;
     }
 }
-
